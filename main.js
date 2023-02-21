@@ -74,10 +74,13 @@ function build_bar_plot() {
     const MAX_Y2 = d3.max(data, (d) => { return parseInt(d.y); });
 
     const X_SCALE2 = d3.scaleBand()
-                    .domain([(d) => { return d.category; }]); // add some padding   
+                    .domain([data.map(d => d.category)])
+                    .rangeRound([MARGINS.left, FRAME_WIDTH - MARGINS.right])
+                    .padding(0.1); // add some padding   
     
     const Y_SCALE2 = d3.scaleLinear() 
-                    .domain([0, MAX_Y2+200]); // add some padding  
+                    .domain([0, MAX_Y2])
+                    .range(FRAME_HEIGHT-MARGINS.bottom, MARGINS.top); // add some padding  
   
     // plot our points
     FRAME2.selectAll("rect")  
@@ -91,12 +94,20 @@ function build_bar_plot() {
           .attr("height", (d) => { return d.amount; });
       
         // Add an axis to the vis  
-    FRAME2.append("g") 
-        .attr("transform", "translate(" + MARGINS.left + 
-        "," + (VIS_HEIGHT + MARGINS.top) + ")") 
-        .call(d3.axisBottom(X_SCALE2))
-        .call(d3.axisLeft(Y_SCALE2).ticks(6))
-        .attr("font-size", '20px'); 
+    // FRAME2.append("g") 
+    //     .attr("transform", "translate(" + MARGINS.left + 
+    //     "," + (VIS_HEIGHT + MARGINS.top) + ")") 
+    //     .call(d3.axisBottom(X_SCALE2))
+    //     .call(d3.axisLeft(Y_SCALE2))
+    //     .attr("font-size", '20px'); 
+
+    FRAME2.append("g")
+      .attr("transform", "translate(0,${FRAME_HEIGHT - MARGINS.bottom+ 100})")
+      .call(d3.axisBottom(X_SCALE2).ticks(7));
+
+    FRAME2.append("g")
+      .attr("transform", "translate(${MARGINS.left} + 100,0)")
+      .call(d3.axisLeft(Y_SCALE2).ticks(5));
       })
         
       }
