@@ -1,0 +1,68 @@
+body {
+    font-family: Arial; 
+}
+
+.heading {
+    text-align:center;
+    flex-shrink: 0;
+    font-size: 15px;
+    height: 120;
+}
+
+.Acknowledgements{
+    text-align:center;
+}
+
+.subheading{
+    text-align:left;
+    font-weight: bold; 
+    object-fit: contain;
+    flex-shrink: 0;
+    font-size: 15px;
+    height:auto;
+
+}
+
+.content{
+    font-weight: normal;
+    height: auto;
+}
+
+.Parent {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.child1 {
+    width: 60%;
+    height: auto;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-shrink: 1;
+}
+
+.child2 {
+    width: 40%;
+    height: auto;
+    flex-wrap: wrap;
+    flex-shrink: 1;
+}
+
+.point {
+    fill: seagreen;
+  }
+  
+
+.tooltip {
+    position: absolute;
+    background-color: grey;
+    border:  solid;
+    border-width: 2px;
+    border-radius: 5px;
+    padding: 5px;
+  }
+  
+  .bar {
+    fill: purple; 
+  }
