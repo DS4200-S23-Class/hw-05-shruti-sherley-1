@@ -20,7 +20,7 @@ const FRAME1 = d3.select("#vis1")
 
 // This time, let's define a function that builds our plot
 // function build_interactive_plot() {
-function build_interactive_plot() {
+function build_scatter_plot() {
   d3.csv("data/scatter-data.csv").then((data) => {
     
     const MAX_X1 = d3.max(data, (d) => { return parseInt(d.x); });
@@ -55,7 +55,7 @@ function build_interactive_plot() {
           .attr("class", "point")
           .style("opacity", 0.8)
   
-    
+    // add hover functionality to circles for mouseover and mouseleave
     circles = FRAME1.selectAll("circle")
     circles
         .on("mouseover", function(){
@@ -89,9 +89,7 @@ function build_interactive_plot() {
       
 
 
-
-
-
+      // create submit button for x and y coordinate input
       submit_button = d3.select("#submit-button");
       submit_button
         .on("click", function(){
@@ -152,8 +150,6 @@ function build_interactive_plot() {
 });
 
 
-      
-
     // Add an axis to the vis  
     FRAME1.append("g") 
     .attr("transform", "translate(" + MARGINS.left + 
@@ -168,9 +164,8 @@ function build_interactive_plot() {
     .attr("font-size", '20px'); 
     });
 }
-
-build_interactive_plot();
-
+// call scatter plot function 
+build_scatter_plot();
 
 
 
@@ -185,12 +180,13 @@ const margin = { top: 20, right: 20, bottom: 30, left: 40 };
 const width = 500 - margin.left - margin.right;
 const height = 300 - margin.top - margin.bottom;
 
+function build_bar_plot() {
 // Create the SVG element for the chart
 const svg = d3.select("#vis2")
   .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
-  .append("g")
+    .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
 // Load the data from the CSV file
@@ -210,7 +206,7 @@ fetch("data/bar-data.csv")
       .range([height, 0]);
   
     // Create the bars
-    const bars = svg.selectAll(".bar")
+    const bars = FRAME2.selectAll(".bar")
       .data(data)
       .enter().append("rect")
         .attr("class", "bar")
@@ -243,5 +239,20 @@ fetch("data/bar-data.csv")
       d3.select(this).style("fill", "steelblue");
   });
 
-  
+  // Add an axis to the vis  
+  FRAME2.append("g") 
+  .attr("transform", "translate(" + MARGINS.left + 
+  "," + (VIS_HEIGHT + MARGINS.top) + ")") 
+  .call(d3.axisBottom(X_SCALE1).ticks(10)) 
+  .attr("font-size", '20px'); 
+
+  FRAME2.append("g") 
+  .attr("transform", "translate(" + MARGINS.left + 
+  "," + (MARGINS.top) + ")") 
+  .call(d3.axisLeft(Y_SCALE1).ticks(10)) 
+  .attr("font-size", '20px'); 
   });
+  
+}
+
+build_bar_plot();
