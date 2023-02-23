@@ -1,28 +1,23 @@
 
-//###############################################################
-// Adding Interaction  
-// To enable interaction, we will still need event handlers
-// and listeners. However, we will use d3 syntax instead of js. 
-//###############################################################
+// initialize constants for frme and visualization dimension for vis1
 const FRAME_HEIGHT = 500;
 const FRAME_WIDTH = 500; 
 const MARGINS = {left: 50, right: 50, top: 50, bottom: 50};
 const VIS_HEIGHT = FRAME_HEIGHT - MARGINS.top - MARGINS.bottom;
 const VIS_WIDTH = FRAME_WIDTH - MARGINS.left - MARGINS.right; 
 
+// create FRAME1 for vis1
 const FRAME1 = d3.select("#vis1")
                   .append("svg")
                     .attr("height", FRAME_HEIGHT)
                     .attr("width", FRAME_WIDTH)
                     .attr("class", "frame"); 
 
-
-
-// This time, let's define a function that builds our plot
-// function build_interactive_plot() {
+// function build_scatter_plot() builds a scatter plot {
 function build_scatter_plot() {
   d3.csv("data/scatter-data.csv").then((data) => {
     
+    // max values for axis 
     const MAX_X1 = d3.max(data, (d) => { return parseInt(d.x); });
     const MAX_Y1 = d3.max(data, (d) => { return parseInt(d.y); });
     
@@ -44,7 +39,7 @@ function build_scatter_plot() {
                     .range([1, (MAX_Y1 + 1)])
 
 
-    // Use X_SCALE and Y_SCALE to plot our points
+    // use X_SCALE and Y_SCALE to plot our points on FRAME1
     FRAME1.selectAll("circle")  
         .data(data) // passed from .then  
         .enter()       
@@ -55,7 +50,8 @@ function build_scatter_plot() {
           .attr("class", "point")
           .style("opacity", 0.8)
   
-    // add hover functionality to circles for mouseover and mouseleave
+    // add hover functionality to circles for mouseover and mouseleave, changing opacity for mouseover
+    // and mouseleave, and fill for click
     circles = FRAME1.selectAll("circle")
     circles
         .on("mouseover", function(){
@@ -80,6 +76,8 @@ function build_scatter_plot() {
           else {
             x.attr("stroke", "none")
           }
+
+          // displays the last point clicked
           const cx = d3.select(this).attr("cx");
           const cy = d3.select(this).attr("cy");
           cxx = Math.round(X_SCALE2(cx-MARGINS.left))
@@ -88,7 +86,6 @@ function build_scatter_plot() {
         })
       
 
-
       // create submit button for x and y coordinate input
       submit_button = d3.select("#submit-button");
       submit_button
@@ -96,6 +93,8 @@ function build_scatter_plot() {
         x = d3.select("#x-coordinate").property("value");
         y = d3.select("#y-coordinate").property("value");
         console.log(x);
+
+        // append to FRAME1
         FRAME1
           .append("circle")
           .attr("cx", X_SCALE1(x) + MARGINS.left) 
@@ -103,23 +102,25 @@ function build_scatter_plot() {
           .attr("r", 10)
           .attr("class", "point");
         });
-
+      
+      // attach event handler to click event for submit button
       submit_button.on("click", function() {
-    // Get the x and y coordinates of the new point
+    
+    // get the x and y coordinates of the new point
     const x = d3.select("#x-coordinate").property("value");
     const y = d3.select("#y-coordinate").property("value");
 
-    // Add the new point to the scatter plot
+    // add the new point to the scatter plot
    FRAME1.append("circle")
       .attr("cx", X_SCALE1(x) + MARGINS.left) 
       .attr("cy", Y_SCALE1(y) + MARGINS.top) 
       .attr("r", 10)
       .attr("class", "point");
 
-    // Update the circles variable by selecting all the circle elements again
+    // update the circles variable by selecting all the circle elements again
     circles = FRAME1.selectAll("circle");
 
-    // Add the mouseover, mouseleave, and click event listeners to the new circles
+    // add the mouseover, mouseleave, and click event listeners to the new circles
     circles
       .on("mouseover", function() {
         d3.select(this)
@@ -147,10 +148,9 @@ function build_scatter_plot() {
         const cyy = Math.round(Y_SCALE2(cy - MARGINS.top));
         document.getElementById("coordinate-display").innerHTML = `Last point clicked<br> (${cxx}, ${cyy})`;
       });
-});
-
-
-    // Add an axis to the vis  
+    });
+    
+    // add an axis to the vis  
     FRAME1.append("g") 
     .attr("transform", "translate(" + MARGINS.left + 
     "," + (VIS_HEIGHT + MARGINS.top) + ")") 
@@ -162,50 +162,45 @@ function build_scatter_plot() {
     "," + (MARGINS.top) + ")") 
     .call(d3.axisLeft(Y_SCALE1).ticks(10)) 
     .attr("font-size", '20px'); 
-    });
+    
+  });
 }
-// call scatter plot function 
+// call scatter plot function to build scatter plot
 build_scatter_plot();
 
 
-
+// create FRAME2 for vis2
 const FRAME2 = d3.select("#vis2")
                   .append("svg")
-                    .attr("height", 300)
-                    .attr("width", 800)
+                    .attr("height", 500)
+                    .attr("width", 500)
                     .attr("class", "frame"); 
 
-
-const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+// constants for margins and dimensions of vis2
+const margin = { top: 50, right: 10, bottom: 50, left: 10 };
 const width = 500 - margin.left - margin.right;
-const height = 300 - margin.top - margin.bottom;
+const height = 500 - margin.top - margin.bottom;
 
+// function build_bar_plot buils a bar graph
 function build_bar_plot() {
-// Create the SVG element for the chart
-const svg = d3.select("#vis2")
-  .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", `translate(${margin.left},${margin.top})`);
 
-// Load the data from the CSV file
+// load the data from the CSV file
 fetch("data/bar-data.csv")
   .then(response => response.text())
   .then(data => {
     data = d3.csvParse(data);
   
-    // Define scales for the x and y axes
+    // define scales for the x and y axes
     const xScale = d3.scaleBand()
-      .domain(data.map(d => d.category))
-      .range([0, width])
-      .padding(0.1);
+      .domain(data.map(function(d) { return d.category; }))
+      .range([0, width-margin.left])
+      .paddingInner(0.1);
   
     const yScale = d3.scaleLinear()
       .domain([0, d3.max(data, d => d.amount)])
       .range([height, 0]);
   
-    // Create the bars
+    // create the bars
     const bars = FRAME2.selectAll(".bar")
       .data(data)
       .enter().append("rect")
@@ -216,43 +211,44 @@ fetch("data/bar-data.csv")
         .attr("height", d => height - yScale(d.amount))
         .attr("fill", "steelblue");
   
-
+  // create tooltip constant
   const tooltip = d3.select("#vis2")
       .append("div")
       .attr("class", "tooltip")
       .style("opacity", 0);
   
-
-  bars.on("mouseover", function(d) {
+  // attack functions to event handler for all bars (class = bar)
+  bars
+    // mouseover changes opacity and displays the coordinate point values using
+    // tootip
+    .on("mouseover", function(event, d) {
       tooltip.transition()
           .duration(200)
-          .style("opacity", .9);
-      tooltip.html(d.value)
-          .style("left", (d3.event.pageX) + "px")
-          .style("top", (d3.event.pageY - 28) + "px");
-      d3.select(this).style("fill", "orange");
-  })
-  .on("mouseout", function(d) {
+          .style("opacity", 1)
+        d3.select(this).style("opacity", 0.5);
+      tooltip.html("Category: " + d.category + "<br>Amount: " + d.amount)
+            .style("left", (event.pageX + 10) + "px") // add offset
+                                                        // from mouse
+            .style("top", (event.pageY - 20) + "px"); 
+    })
+    
+    // make the fill of the bars blue on exit 
+     .on("mouseout", function(d) {
       tooltip.transition()
-          .duration(500)
-          .style("opacity", 0);
+           .duration(500)
+           .style("opacity", 0);
       d3.select(this).style("fill", "steelblue");
-  });
-
-  // Add an axis to the vis  
-  FRAME2.append("g") 
-  .attr("transform", "translate(" + MARGINS.left + 
-  "," + (VIS_HEIGHT + MARGINS.top) + ")") 
-  .call(d3.axisBottom(X_SCALE1).ticks(10)) 
-  .attr("font-size", '20px'); 
-
-  FRAME2.append("g") 
-  .attr("transform", "translate(" + MARGINS.left + 
-  "," + (MARGINS.top) + ")") 
-  .call(d3.axisLeft(Y_SCALE1).ticks(10)) 
-  .attr("font-size", '20px'); 
-  });
+    });
   
+  // create x-axis using xScale
+  var xAxis = d3.axisBottom(xScale);
+
+  // position the x-axis
+  var xAxisGroup = FRAME2.append("g")
+    .attr("transform", "translate(0," + (height ) + ")")
+    .call(xAxis);
+  })
 }
 
+// call build_bar_plot function to create bar graph
 build_bar_plot();

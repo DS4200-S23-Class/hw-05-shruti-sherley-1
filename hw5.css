@@ -36,7 +36,7 @@ body {
 
 .child1 {
     width: 60%;
-    height: auto;
+    height: 1000px;
     align-items: center;
     flex-wrap: wrap;
     flex-shrink: 1;
